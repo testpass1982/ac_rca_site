@@ -5,7 +5,7 @@
 	    <div class="col-xl-12 no-otstup">
 	            <div class="menu__navbar">
 	                <!--Navbar-->
-	                <nav class="navbar navbar-expand-lg navbar-dark primary-color">
+	                <nav class="navbar navbar-expand-lg navbar-dark"{% if site_comp.parameters.menu_font_size %} style="font-size: {{site_comp.parameters.menu_font_size}};"{% endif %}>
 
 	                    <!-- Navbar brand -->
 
@@ -26,6 +26,16 @@
 	                                    <span class="sr-only">(current)</span>
 	                                </a>
 	                            </li>
+
+								{% if site_comp.parameters.proyti %}
+
+	                            <li class="nav-item active">
+	                                <a class="nav-link" href="{% link_holder 'PROYTI' %}">{% title_holder 'PROYTI' %}
+	                                    <span class="sr-only">(current)</span>
+	                                </a>
+	                            </li>
+
+								{% endif %}
 
 	                            <!-- Dropdown -->
 	                            <li class="nav-item active">

@@ -157,6 +157,7 @@ def page_details(request, pk=None):
 
     post = get_object_or_404(Post, pk=pk)
     parameters = PostParameter.objects.filter(post=post).order_by('number')
+    images = PostPhoto.objects.filter(post__pk=pk)
     page_parameters = []
     for param in parameters:
         json_parameter = json.loads(param.parameter)
@@ -171,6 +172,7 @@ def page_details(request, pk=None):
         'title': 'Детальный просмотр',
         'post': post,
         'side_panel': side_panel,
+        'images': images,
         'page_parameters': page_parameters
     }
     return render(request, 'mainapp/page_details.html', content)
@@ -214,10 +216,17 @@ def profstandarti(request):
     }
     return render(request, 'mainapp/profstandarti.html', content)
 def contacts(request):
+
     content = {
         'title': 'Контакты',
         'contacts': Contact.objects.all().order_by('number')
     }
+    if Post.objects.filter(url_code='WALKTHROUGH').count() > 0:
+        walkthrough = Post.objects.get(url_code="WALKTHROUGH")
+        content.update({
+            'walktrough': walkthrough
+        })
+        # import pdb; pdb.set_trace()
     return render(request, 'mainapp/contacts.html', content)
 def all_news(request):
     content = {

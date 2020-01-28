@@ -123,11 +123,16 @@ def upload_lock_files():
                 path_to_project=PATH_TO_PROJECT)):
                 with open(os.path.join(r, file), 'r', encoding='utf-8') as lock_file:
                     component_name = json.load(lock_file)['title']
-                run('rm {path_to_project}/{remote_components_folder}/{component_name}/installed.lock'.format(
-                    path_to_project=PATH_TO_PROJECT,
-                    remote_components_folder=REMOTE_COMPONENTS_FOLDER,
-                    component_name=component_name
-                ))
+                    if exists('{path_to_project}/{remote_components_folder}/{component_name}/installed.lock'.format(
+                        path_to_project=PATH_TO_PROJECT,
+                        remote_components_folder=REMOTE_COMPONENTS_FOLDER,
+                        component_name=component_name
+                    )):
+                        run('rm {path_to_project}/{remote_components_folder}/{component_name}/installed.lock'.format(
+                            path_to_project=PATH_TO_PROJECT,
+                            remote_components_folder=REMOTE_COMPONENTS_FOLDER,
+                            component_name=component_name
+                        ))
                 put('{}'.format(os.path.join(r, file)),
                     '{path_to_project}/{remote_components_folder}/{component_name}/'.format(
                     path_to_project=PATH_TO_PROJECT,
@@ -136,12 +141,40 @@ def upload_lock_files():
                 ))
     restore_lock_files()
 
+
+def git_remove_lock_and_styles():
+    output = local("git ls-files *.lock", capture=True)+local("git ls-files *variables.scss", capture=True)
+    if len(output) == 0:
+        print('lock not in repo')
+        return
+    local('git rm --cached *installed.lock')
+    local('git rm --cached *variables.scss')
+    local("sed -i 's/# installed.lock/installed.lock/g; \
+        s/# _variables.scss/_variables.scss/g' .gitignore")
+    local('git add .')
+    local('git commit -m "remove lock files and scss variables from repo before update"')
+    print('removed lock_files and styles')
+
+
+def git_add_lock_files_and_styles():
+    output = local("git ls-files *.lock", capture=True)+local("git ls-files *variables.scss", capture=True)
+    for line in output.splitlines():
+        if any(['lock' in line, 'variables' in line]):
+            print('lock files in repo:', line)
+            return
+    local("sed -i 's/installed.lock/# installed.lock/g; \
+    s/_variables.scss/# _variables.scss/g' .gitignore")
+    local('git add .')
+    local('git commit -m "add lock files in repo"')
+
+
 def rebuild_components():
     with cd('{}'.format(PATH_TO_PROJECT)):
         with prefix(env.activate):
             # run('pwd')
             run('{python} manage.py install_components'.format(python=p))
             run('deactivate')
+
 
 @runs_once
 def remote_migrate():
@@ -235,7 +268,7 @@ def clone():
 
 
 #as user
-def update():
+def remote_update():
     with cd('{}'.format(PATH_TO_PROJECT)):
         output = run("git status")
         for line in output.splitlines():
@@ -341,14 +374,19 @@ def deploy_static():
         ***********************
     """))
 
+
+def put_youtube_plugin():
+    pass
+
+
 def local_collectstatic():
     local('{python} manage.py collectstatic --noinput'.format(python=p))
 
 def remote_collectstatic():
     # manage.py collectstatic --noinput
-    if exists('{path}/static_root/'.format(path=PATH_TO_PROJECT)):
+    # if exists('{path}/static_root/'.format(path=PATH_TO_PROJECT)):
         # import pdb; pdb.set_trace()
-        run('rm -rf {path}/static_root/'.format(path=PATH_TO_PROJECT))
+        # run('rm -rf {path}/static_root/'.format(path=PATH_TO_PROJECT))
     with cd('{}'.format(PATH_TO_PROJECT)):
         with prefix(env.activate):
             run('{python} manage.py collectstatic --noinput'.format(
@@ -530,6 +568,7 @@ def deploy():
                 ************************
             """))
             wait(3)
+            git_add_lock_files_and_styles()
             test()
             local_push()
             clone()
@@ -564,20 +603,24 @@ def deploy():
         confirm = prompt("Update? your answer y/n:")
         if confirm == 'y':
             test()
-            update()
-            upload_lock_files()
-            rebuild_components()
+            git_remove_lock_and_styles()
+            local_push()
+            server_commit()
+            remote_update()
+            # upload_lock_files()
+            # rebuild_components()
             remote_migrate()
             app_migrate('mainapp')
-            server_commit()
             remote_test()
+            local('{} functional_tests.py {}'.format(p, env.domain_name))
+            remote_collectstatic()
             # deploy_static()
             # change  secret_key
             # change debug mode
             # change allowed hosts
+            server_commit()
             sudo('systemctl restart {}.service'.format(env.project_name))
             sudo('systemctl show {}.service --no-page'.format(env.project_name))
             sudo('nginx -s reload')
-            local('{} functional_tests.py {}'.format(p, env.domain_name))
         else:
             print(green('***UPDATE CANCELLED***'))

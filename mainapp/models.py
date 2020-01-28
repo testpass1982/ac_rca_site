@@ -52,7 +52,7 @@ class ContentMixin(models.Model):
     url_code = models.CharField(u'Код ссылки', max_length=30, blank=True, default='НЕ УКАЗАН')
     short_description = models.CharField(
         u'Краткое описание', max_length=200, blank=True)
-    tags = models.ManyToManyField(Tag, verbose_name='Тэги')
+    tags = models.ManyToManyField(Tag, verbose_name='Тэги', blank=True)
     published_date = models.DateTimeField(
         u'Дата публикации', blank=True, null=True)
     created_date = models.DateTimeField(u'Дата создания', default=timezone.now)
@@ -92,7 +92,7 @@ class SidePanel(models.Model):
 class Post(ContentMixin):
     '''child of contentmixin'''
     category = models.ForeignKey(
-        Category, verbose_name='Категория', on_delete=models.CASCADE)
+        Category, verbose_name='Категория', on_delete=models.CASCADE, blank=True)
     publish_on_main_page = models.NullBooleanField(u'Опубликовать на главной', default=False)
     publish_on_news_page = models.BooleanField(
         verbose_name="Опубликовать в ленте новостей", default=False)
@@ -347,6 +347,7 @@ class Service(models.Model):
     bg_photo = models.ImageField(u'Картинка для главной', upload_to="upload/", null=True, blank=True, default=None)
     documents = models.ManyToManyField(Document, blank=True)
     parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE)
+    disable_order_button = models.BooleanField(u'Отключить кнопку подачи заявки', default=False)
 
 
     class Meta:
@@ -359,6 +360,9 @@ class Service(models.Model):
 class Profile(models.Model):
     """class for templating organization"""
     org_logotype = models.ImageField(u'Логотип организации', upload_to='upload/', blank=True, null=True, default=None)
+    org_footer_logotype = models.ImageField(
+        u'Логотип для футера (необязательно)',
+        upload_to='upload/', blank=True, null=True, default=None)
     org_short_name = models.CharField(u'Краткое название организации', max_length=100, blank=True, null=True, default=None)
     org_full_name = models.CharField(u'Полное название организации', max_length=300, blank=True, null=True, default=None)
     org_intro = models.TextField(u'Текст для главной страницы', blank=True, null=True, default=None)
@@ -376,6 +380,7 @@ class Profile(models.Model):
     org_header_phones = models.TextField(u'Телефоны (для хедера)', blank=True, null=True, default=None)
     org_address = models.TextField(u'Адрес местоположения организации', null=True, blank=True, default=None)
     org_address_map_link = models.CharField(u'Ссылка на карту', blank=True, null=True, default=None, max_length=500)
+    org_work_time = models.CharField(u'Время работы организации', null=True, blank=True, default=None, max_length=100)
     org_csp_code = models.CharField(u'шифр ЦСП (необязательно)', max_length=20, null=True, blank=True)
     org_csp_reestr_link = models.URLField(u'Ссылка на реестр ЦСП', blank=True, null=True)
     org_acsp_code = models.CharField(u'шифр АЦСП (необязательно)', max_length=20, null=True, blank=True)
@@ -388,8 +393,9 @@ class Profile(models.Model):
     org_acst_reestr_link = models.URLField(u'Ссылка на реестр АЦСТ', blank=True, null=True)
     org_cok_code = models.CharField(u'шифр ЦОК (необязательно)', max_length=20, null=True, blank=True)
     org_cok_reestr_link = models.URLField(u'Ссылка на реестр ЦОК', blank=True, null=True)
+    add_ap_list = models.BooleanField(u'Добавить ссылку на список пунктов', default=False)
+    add_schedule = models.BooleanField(u'Добавить ссылку на график аттестации', default=False)
     number = models.SmallIntegerField(u'Порядок сортировки', null=True, blank=True)
-
     class Meta:
         verbose_name = 'Профиль организации'
         verbose_name_plural = 'Профили организации'

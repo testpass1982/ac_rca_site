@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"code": "top-addr-line-v2", "relative_scss_path": "scss/components/top-addr-line-v2/component.scss", "title": "top-addr-line-v2", "relative_js_path": "js/top-addr-line-v2/", "html_path": "/home/popov/ac_rca_site/mainapp/templates/mainapp/components/top-addr-line-v2/component.html", "relative_html_path": "mainapp/components/top-addr-line-v2/component.html", "js_path": "", "component_type": "top-addr-line", "scss_path": "/home/popov/ac_rca_site/assets/scss/components/top-addr-line-v2/component.scss"}
+=======
+{"relative_scss_path": "scss/components/top-addr-line-v2/component.scss", "relative_js_path": "js/top-addr-line-v2/", "title": "top-addr-line-v2", "component_type": "top-addr-line", "code": "top-addr-line-v2", "relative_html_path": "mainapp/components/top-addr-line-v2/component.html", "html_path": "/home/popov/ac_energocomplex_site/mainapp/templates/mainapp/components/top-addr-line-v2/component.html", "js_path": "", "scss_path": "/home/popov/ac_energocomplex_site/assets/scss/components/top-addr-line-v2/component.scss"}
+>>>>>>> 3946286fd296f407492c80327175af9cc4cdb688

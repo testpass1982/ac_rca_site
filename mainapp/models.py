@@ -342,6 +342,7 @@ class Service(models.Model):
             сортируются в соответствии с порядком сортировки
         """)
     short_description = models.CharField(u'Краткое описание услуги', max_length=200, blank=True, null=True, default=None)
+    pseudo = models.CharField(u'Псевдоним', max_length=30, default='pseudo')
     html = RichTextUploadingField(u'Описание услуги')
     number = models.SmallIntegerField(u'Порядок сортировки', blank=True, null=True, default=None)
     bg_photo = models.ImageField(u'Картинка для главной', upload_to="upload/", null=True, blank=True, default=None)
@@ -368,11 +369,11 @@ class Profile(models.Model):
     org_intro = models.TextField(u'Текст для главной страницы', blank=True, null=True, default=None)
     org_history = models.TextField(u'История организаици', blank=True, null=True, default=None)
     # phone1 for header
-    org_main_phone = models.CharField(u'Главный телефон организации (используется в хедере)', max_length=30, blank=True, null=True, default=None)
-    org_main_phone_text = models.CharField(u'Подпись под телефоном в хедере, например "Многоканальный"', max_length=30, blank=True, null=True, default=None)
+    org_main_phone = models.CharField(u'Главный телефон организации (используется в хедере)', max_length=200, blank=True, null=True, default=None)
+    org_main_phone_text = models.CharField(u'Подпись под телефоном в хедере, например "Многоканальный"', max_length=200, blank=True, null=True, default=None)
     # phone2 for header
-    org_secondary_phone = models.CharField(u'Второй телефон организации (используется в хедере)', max_length=30, blank=True, null=True, default=None)
-    org_secondary_phone_text = models.CharField(u'Подпись под вторым телефоном в хедере, например "Бухгалтерия"', max_length=30, blank=True, null=True, default=None)
+    org_secondary_phone = models.CharField(u'Второй телефон организации (используется в хедере)', max_length=200, blank=True, null=True, default=None)
+    org_secondary_phone_text = models.CharField(u'Подпись под вторым телефоном в хедере, например "Бухгалтерия"', max_length=200, blank=True, null=True, default=None)
     org_phones = models.TextField(u'Телефоны', blank=True, null=True, default=None)
     org_email = models.TextField(u'Адрес электронной почты', blank=True, null=True, default=None)
     org_order_email = models.CharField(u'Адреса для подключения формы заявки', max_length=100, blank=True, null=True, default=None)
@@ -523,6 +524,7 @@ class Component(models.Model):
         ('contact_block', 'Блок с контактами'),
         ('advertising_block', 'Блок с рекламой'),
         ('partners_block', 'Блок с партнерами'),
+        ('contact_page', 'Страница контактов'),
         ('footer', 'Футер')
     )
     title = models.CharField(u'Название компонента', max_length=60)
@@ -595,7 +597,9 @@ class Partner(models.Model):
 
 class OrderService(models.Model):
     name = models.CharField(u'Имя контакта', max_length=50)
+    pseudo = models.CharField(u'Псевдоним', max_length=30, default='pseudo')
     phone = models.CharField(u'Телефон контакта', max_length=50)
+    email = models.EmailField(u'Адрес эл почты')
     compound = models.CharField(u'Состав заявки', max_length=300, default=None, blank=True, null=True)
     ready = models.BooleanField(u'Вопрос решен', default=False, blank=True, null=True)
 
@@ -609,7 +613,7 @@ class OrderService(models.Model):
 class SlideBackgrounds(models.Model):
     title = models.CharField(
         u'Название',
-        default='Слайдер_{}'.format(timezone.now()),
+        default='Слайдер',
         max_length=50
     )
     image = StdImageField(

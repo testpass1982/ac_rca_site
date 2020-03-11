@@ -48,7 +48,12 @@ def services(request):
     all_services = []
     for s in services:
         if s.parent is None:
-            all_services.append({'title': s.title, 'pk': s.pk, 'descendants': Service.objects.filter(parent=s)})
+            all_services.append({
+                'title': s.title,
+                'pk': s.pk,
+                'descendants': Service.objects.filter(parent=s),
+                'pseudo': s.pseudo,
+                })
         else:
             continue
     # import pdb; pdb.set_trace()
@@ -66,14 +71,19 @@ def site_configuration(request):
         site = SiteConfiguration.objects.filter(activated=True)
         bd_components = Component.objects.filter(configuration=site[0].pk).order_by('number')
         site_components = [SiteComponent(component) for component in bd_components]
+        contact_page_component = Component.objects.filter(component_type='contact_page')
         # import pdb; pdb.set_trace()
-        return {
+        conf = {
                 'site': {
                     'components': site_components,
                     'font_url': site[0].font.font_url,
                     'font_family': site[0].font.title,
                     }
                 }
+        if contact_page_component:
+            conf['site']['contact_page'] = SiteComponent(contact_page_component.first())
+        # import pdb; pdb.set_trace()
+        return conf
     except Exception as e:
         print (colorize('###---> SITE CONFIGURATION ERROR: {}'.format(e), bg='red'))
         return {'site': {'components': None}}

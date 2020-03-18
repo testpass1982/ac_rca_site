@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 {"code": "info-block-v1", "relative_scss_path": "scss/components/info-block-v1/component.scss", "title": "info-block-v1", "relative_js_path": "js/info-block-v1/", "component_type": "advertising_block", "relative_html_path": "mainapp/components/info-block-v1/component.html", "html_path": "/home/popov/ac_rca_site/mainapp/templates/mainapp/components/info-block-v1/component.html", "js_path": "", "scss_path": "/home/popov/ac_rca_site/assets/scss/components/info-block-v1/component.scss"}
 =======
 {"relative_scss_path": "scss/components/info-block-v1/component.scss", "relative_js_path": "js/info-block-v1/", "title": "info-block-v1", "component_type": "advertising_block", "code": "info-block-v1", "relative_html_path": "mainapp/components/info-block-v1/component.html", "html_path": "/home/popov/ac_energocomplex_site/mainapp/templates/mainapp/components/info-block-v1/component.html", "js_path": "", "scss_path": "/home/popov/ac_energocomplex_site/assets/scss/components/info-block-v1/component.scss"}
 >>>>>>> 3946286fd296f407492c80327175af9cc4cdb688
+=======
+{"relative_scss_path": "scss/components/info-block-v1/component.scss", "relative_js_path": "js/info-block-v1/", "title": "info-block-v1", "component_type": "advertising_block", "code": "info-block-v1", "relative_html_path": "mainapp/components/info-block-v1/component.html", "html_path": "/home/popov/ac_template_site/mainapp/templates/mainapp/components/info-block-v1/component.html", "js_path": "", "scss_path": "/home/popov/ac_template_site/assets/scss/components/info-block-v1/component.scss"}
+>>>>>>> c1d3839ebb4cda11a1abf15cce1e7a59235ecd4b

@@ -40,7 +40,7 @@
                         </p>
                     </div>
                     {% for post in basement_news %}
-                    <div class="box_footer_news {% if user.is_authenticated %}editable{% endif %}">
+                    <div class="box_footer_news">
                         <a href="{% url 'details_news' post.pk %}">
                             <p class="footer_news">
                                 {{ post.title }}
@@ -51,6 +51,24 @@
                         </p>
                     </div>
                     {% endfor %}
+
+                    {% if basement_docs %}
+                        <div class="line_footer_basement"></div>
+                        <div class="head_info_footer">
+                            <p class="name_info_block">
+                                Документы
+                            </p>
+                        </div>
+                        {% for doc in basement_docs %}
+                        <div class="box_footer_news">
+                            <a href="{{ doc.document.url }}">
+                                <p class="footer_news">
+                                    {{ doc.title }}
+                                </p>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
 
 
                 </div>
@@ -115,9 +133,15 @@
                         </p>
                     </div>
                     <div class="col-xl-3 col-md-4">
+                    {% if site.confid_doc %}
+                        <div class="political_konf" target="_blank">
+                            <a href="{{site.confid_doc.document.url}}">{{site.confid_doc.title}}</a>
+                        </div>
+                    {% else %}
                         <div class="political_konf" target="_blank">
                             <a href="{% link_holder 'PRIVACY_POLICY' %} ">{% title_holder 'PRIVACY_POLICY' %}</a>
                         </div>
+                    {% endif %}
 
                     </div>
 

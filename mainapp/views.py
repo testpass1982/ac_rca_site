@@ -28,7 +28,7 @@ def accept_order(request):
             "captcha_1": request.POST.get('captcha_1'),
             "captcha_0": request.POST.get('captcha_0'),
             }
-        all_services = Service.objects.all()
+        all_services = Service.objects.all().exclude(pseudo="pseudo")
         order_variants = [srvc.pseudo for srvc in all_services]
         if any([request.POST.get(order_item) for order_item in order_variants]):
             order_compound = {
@@ -148,10 +148,13 @@ def reestr(request):
 def doc(request):
     from .models import DocumentCategory
 
+    doc_chunk = Chunk.objects.filter(code='DOCS_PAGE').first()
+
     content={
         "title": "Документы",
         'docs': Document.objects.all(),
-        'categories': DocumentCategory.objects.all()
+        'categories': DocumentCategory.objects.all(),
+        'doc_chunk': doc_chunk
     }
     return render(request, 'mainapp/doc.html', content)
 
@@ -192,10 +195,14 @@ def article_details(request, pk=None):
 
 def service_details(request, pk=None):
     service = get_object_or_404(Service, pk=pk)
+    images = ServicePhoto.objects.filter(service=service).order_by('position')
     content = {
         'title': 'Детальный просмотр',
         'post': service,
+        'images': images,
     }
+    if service.alternative_url == 'qual':
+        return HttpResponseRedirect(reverse('qual'))
     return render(request, 'mainapp/page_details.html', content)
 
 def cok(request):
@@ -220,6 +227,8 @@ def profstandarti(request):
         'profstandards': profstandards,
     }
     return render(request, 'mainapp/profstandarti.html', content)
+
+
 def contacts(request):
 
     content = {
@@ -233,6 +242,8 @@ def contacts(request):
         })
         # import pdb; pdb.set_trace()
     return render(request, 'mainapp/contacts.html', content)
+
+
 def all_news(request):
     content = {
         'title': 'All news',

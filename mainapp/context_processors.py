@@ -1,5 +1,6 @@
 from .models import Document
 from .models import Profile, Service, Post, SiteConfiguration, Component, Partner, Attestat
+from .models import Phone
 from qualsection.models import CokPlaceInfo
 from .forms import ProfileImportForm, OrderForm
 import random
@@ -37,15 +38,27 @@ def basement_news(request):
     except Exception as e:
         print('ERROR', e)
 
+def basement_docs(request):
+    try:
+        basement_docs = Document.objects.filter(
+            publish_in_basement=True
+        ).order_by('-created_date')
+        return {'basement_docs': basement_docs}
+    except Exception as e:
+        print('DOCUMENTS ERROR', e)
+
 
 def profile_chunks(request):
     profile = Profile.objects.first()
-    return {'profile': profile}
+    profile_obj = {'profile': profile}
+    if Phone.objects.count() > 0:
+        profile_obj.update({'phones': Phone.objects.all().order_by('sort')})
+    return profile_obj
 
 
 def services(request):
 
-    services = Service.objects.all().order_by('number')
+    services = Service.objects.all().exclude(pseudo="pseudo").order_by('number')
     all_services = []
     for s in services:
         if s.parent is None:
@@ -74,15 +87,19 @@ def site_configuration(request):
         site_components = [SiteComponent(component) for component in bd_components]
         contact_page_component = Component.objects.filter(component_type='contact_page')
         qualsection = CokPlaceInfo.objects.count()
+        confid_doc = Document.objects.filter(url_code='PRIVACY_POLICY').first()
         # import pdb; pdb.set_trace()
         conf = {
                 'site': {
+                    'configuration': site[0],
                     'components': site_components,
                     'font_url': site[0].font.font_url,
                     'font_family': site[0].font.title,
                     'qualsection': qualsection,
+                    'confid_doc': confid_doc
                     }
                 }
+        # import pdb; pdb.set_trace()
         if contact_page_component:
             conf['site']['contact_page'] = SiteComponent(contact_page_component.first())
         # import pdb; pdb.set_trace()

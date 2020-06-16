@@ -183,7 +183,7 @@ class PostAdmin(admin.ModelAdmin):
     fields = [
         'id', 'title', 'url_code', 'side_panel', 'tags', 'category', 'author', 'short_description',
         'text', get_url, 'created_date', 'published_date',
-        'publish_on_main_page', 'publish_on_news_page', 'publish_in_basement',
+        'publish_on_main_page', 'publish_on_news_page', 'publish_in_basement', 'disable_order_button'
     ]
     readonly_fields = ['id', get_url]
     list_display = [
@@ -217,9 +217,14 @@ class CenterPhotoAdmin(admin.ModelAdmin):
 class ContactAdmin(admin.ModelAdmin):
     list_display = ['title', 'number']
 
+class ServicePhotoInline(admin.StackedInline):
+    model = ServicePhoto
+    extra = 0
+
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ['title', 'number', 'pseudo', 'parent']
+    inlines = [ServicePhotoInline]
 
 from django.db import models
 from django.forms import TextInput
@@ -265,6 +270,7 @@ class OrderServiceAdmin(admin.ModelAdmin):
 class StaffAdmin(admin.ModelAdmin):
     list_display = ['name', 'job', 'priority']
 
+admin.site.register(Phone)
 admin.site.register(Partner)
 admin.site.register(SlideBackgrounds)
 admin.site.register(Font)
@@ -277,3 +283,4 @@ admin.site.register(Attestat)
 admin.site.register(Profile)
 admin.site.register(Profstandard)
 admin.site.register(DocumentCategory)
+admin.site.register(Chunk)

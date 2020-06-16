@@ -91,6 +91,9 @@ INSTALLED_APPS = [
     'stdimage',
 ]
 
+FILE_UPLOAD_PERMISSIONS = 0o644
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -118,6 +121,7 @@ TEMPLATES = [
                 'mainapp.context_processors.profile_import',
                 'mainapp.context_processors.services',
                 'mainapp.context_processors.basement_news',
+                'mainapp.context_processors.basement_docs',
                 'mainapp.context_processors.site_configuration',
                 'mainapp.context_processors.partners',
                 'mainapp.context_processors.order_form',

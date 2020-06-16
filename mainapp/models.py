@@ -99,6 +99,8 @@ class Post(ContentMixin):
     publish_in_basement = models.BooleanField(u'Опубликовать в подвале на главной', default=False)
     side_panel = models.ForeignKey(SidePanel, verbose_name='Боковая панель', blank=True,
                                     null=True, default=None, on_delete=models.SET_NULL)
+    disable_order_button = models.BooleanField(u'Отключить кнопку подачи заявки', default=False)
+
 
     class Meta:
         ordering = ['created_date']
@@ -182,6 +184,9 @@ class Document(models.Model):
                              null=True)
     publish_on_main_page = models.BooleanField(
         verbose_name="Опубиковать на главной", default=False)
+    publish_in_basement = models.BooleanField(
+        verbose_name="Опубликовать в подвале", default=False
+    )
 
     class Meta:
         verbose_name = "Документ"
@@ -349,6 +354,7 @@ class Service(models.Model):
     documents = models.ManyToManyField(Document, blank=True)
     parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE)
     disable_order_button = models.BooleanField(u'Отключить кнопку подачи заявки', default=False)
+    alternative_url = models.CharField(u'Ссылка на другой раздел (не обязательно)', blank=True, null=True, max_length=100)
 
 
     class Meta:
@@ -357,6 +363,27 @@ class Service(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class ServicePhoto(models.Model):
+    """model to load photos to content page"""
+    service = models.ForeignKey(Service, verbose_name=u'услуга',
+                             related_name='images',
+                             on_delete=models.SET_NULL,
+                             null=True)
+    image = models.ImageField(u'изображение', upload_to="upload/")
+    title = models.CharField(u'название', max_length=64,
+                             blank=True, default=get_image_filename)
+    position = models.PositiveIntegerField(u'Позиция', default=0)
+
+    class Meta:
+        verbose_name = "Фото для услуги"
+        verbose_name_plural = "Фотографии для услуг"
+        ordering = ['position']
+
+    def __str__(self):
+        return '{} - {}'.format(self.service, self.image)
+
 
 class Profile(models.Model):
     """class for templating organization"""
@@ -396,6 +423,10 @@ class Profile(models.Model):
     org_cok_reestr_link = models.URLField(u'Ссылка на реестр ЦОК', blank=True, null=True)
     add_ap_list = models.BooleanField(u'Добавить ссылку на список пунктов', default=False)
     add_schedule = models.BooleanField(u'Добавить ссылку на график аттестации', default=False)
+    counterjs = models.TextField(u'Код счетчика', blank=True, null=True, default=None, max_length=1500)
+    counter_ID = models.CharField(u'ID счетчика Яндекс.Метрики', blank=True, null=True, max_length=20)
+    counter_js_goal1 = models.CharField(u'JS код счетчика (1)', max_length=500, null=True, blank=True)
+    counter_js_goal2 = models.CharField(u'JS код счетчика (2)', max_length=500, null=True, blank=True)
     number = models.SmallIntegerField(u'Порядок сортировки', null=True, blank=True)
     class Meta:
         verbose_name = 'Профиль организации'
@@ -495,6 +526,8 @@ class SiteConfiguration(models.Model):
         null=True,
         default='main-menu-v1 main-page-slider-v1 main-page-slider-v3 main-page-content-v1')
     font = models.ForeignKey(Font, null=True, blank=True, on_delete=models.SET_NULL)
+    phone_icon = models.CharField(u'Имя файла с иконкой телефона', default='',null=True, blank=True, max_length=50)
+    person_icon = models.CharField(u'Имя файла с иконкой человека', default='', null=True, blank=True, max_length=50)
     activated = models.BooleanField(u'Активировать', default=False)
 
     class Meta:
@@ -600,7 +633,7 @@ class OrderService(models.Model):
     pseudo = models.CharField(u'Псевдоним', max_length=30, default='pseudo')
     phone = models.CharField(u'Телефон контакта', max_length=50)
     email = models.EmailField(u'Адрес эл почты')
-    compound = models.CharField(u'Состав заявки', max_length=300, default=None, blank=True, null=True)
+    compound = models.CharField(u'Состав заявки', max_length=1000, default=None, blank=True, null=True)
     ready = models.BooleanField(u'Вопрос решен', default=False, blank=True, null=True)
 
     class Meta:
@@ -632,3 +665,12 @@ class SlideBackgrounds(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Phone(models.Model):
+    number = models.CharField(u'Номер телефона', max_length=20)
+    title = models.CharField(u'Название телефона (например, бухгалтерия)', max_length=30, null=True, blank=True)
+    sort = models.SmallIntegerField(u'Сортировка')
+
+    def __str__(self):
+        return self.number
